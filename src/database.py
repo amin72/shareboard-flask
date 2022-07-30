@@ -26,4 +26,4 @@ class Ticket(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __str__(self) -> str:
-        return f'Ticket: {self.user_id.username}'
+        return f'Ticket: {self.user.username}'
