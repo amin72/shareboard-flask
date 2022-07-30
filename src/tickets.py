@@ -55,3 +55,39 @@ def create_ticket():
         'body': ticket.body,
         'created_at': ticket.created_at,
     }, 201
+
+
+@tickets.route('/<id>', methods=['PUT'])
+@jwt_required()
+def update_ticket(id):
+    """
+    Updates ticket on the board.
+
+    Receive put request containing body of ticket.
+    """
+
+    current_user = get_jwt_identity()
+    ticket = Ticket.query.get(id)
+
+    if ticket.user_id != current_user:
+        return {
+            'error': 'You do not own this ticket',
+        }, 403
+
+    body = request.json.get('body', '')
+
+    if not body:
+        return {
+            'error': 'body field can not be empty',
+        }, 400
+
+    ticket.body = body
+    db.session.add(ticket)
+    db.session.commit()
+
+    return {
+        'id': ticket.id,
+        'body': ticket.body,
+        'created_at': ticket.created_at,
+        'updated_at': ticket.created_at,
+    }, 200
