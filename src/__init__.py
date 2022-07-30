@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from src.database import db
 
 
 def create_app():
@@ -11,6 +12,8 @@ def create_app():
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         JWT_SECRET_KEY=os.environ.get('JWT_SECRET_KEY')
     )
+
+    db.init_app(app)
 
     @app.get('/')
     def home():
