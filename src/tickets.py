@@ -43,7 +43,7 @@ def create_ticket():
 
     if not body:
         return {
-            'error': 'body field cat not be empty',
+            'error': 'body field can not be empty',
         }, 400
 
     ticket = Ticket(body=body, user_id=current_user)
