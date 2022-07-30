@@ -1,6 +1,11 @@
 import os
+
 from flask import Flask
+from flask_jwt_extended.jwt_manager import JWTManager
+
 from src.database import db
+from src.auth import auth
+
 
 
 def create_app():
@@ -18,5 +23,9 @@ def create_app():
     @app.get('/')
     def home():
         return 'Home Page!'
+
+    JWTManager(app)
+
+    app.register_blueprint(auth)
 
     return app
