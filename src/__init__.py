@@ -5,7 +5,7 @@ from flask_jwt_extended.jwt_manager import JWTManager
 
 from src.database import db
 from src.auth import auth
-from src.tickets import tickets
+from src.tickets import tickets, limiter
 
 
 
@@ -29,5 +29,7 @@ def create_app():
 
     app.register_blueprint(auth)
     app.register_blueprint(tickets)
+
+    limiter.init_app(app)
 
     return app

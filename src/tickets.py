@@ -1,10 +1,14 @@
 from flask import Blueprint, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from src.database import Ticket, db
 
 
 tickets = Blueprint('tickets', __name__, url_prefix='/api/v1/tickets')
+
+limiter = Limiter(key_func=get_remote_address)
 
 
 @tickets.route('/', methods=['GET'])
@@ -29,6 +33,7 @@ def all_tickets():
 
 
 @tickets.route('/', methods=['POST'])
+@limiter.limit("3 per minute")
 @jwt_required()
 def create_ticket():
     """
