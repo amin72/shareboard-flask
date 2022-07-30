@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Blueprint, jsonify, request
 from werkzeug.security import (
     check_password_hash,
@@ -9,8 +11,11 @@ from flask_jwt_extended import (
     jwt_required,
     create_access_token,
     create_refresh_token,
+    get_jwt,
 )
+
 from src.database import db, User
+from src.redis_connection import jwt_redis_blocklist
 
 
 auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
@@ -117,3 +122,18 @@ def refresh_user_token():
     return {
         'access': access
     }, 200
+
+
+@auth.delete('/logout')
+@jwt_required()
+def logout():
+    jti = get_jwt()['jti']
+
+    # set timeout to clear blocked jwt token in redis
+    ACCESS_EXPIRES = timedelta(minutes=15)
+
+    jwt_redis_blocklist.set(jti, '', ex=ACCESS_EXPIRES)
+
+    return {
+        'message': 'Access token revoked'
+    }, 401
